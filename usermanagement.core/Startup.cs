@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Logging;
 using FluentValidation;
 using Microsoft.Identity.Web;
 using Serilog;
+using usermanagement.core.Services;
+using usermanagement.core.Utilities;
 
 namespace usermanagement.core
 
@@ -43,6 +45,17 @@ namespace usermanagement.core
             {
                 c.EnableAnnotations();
             });
+
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRoleService, UserRoleService>();
+
+            services.AddScoped<IUserUtilities, UserUtilities>();
+            services.AddScoped<IUserRoleUtilities, UserRoleUtilities>();
+
+            // services.AddScoped<ValidationHelper>();
+
+            services.AddControllers();
+            // services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>();
 
 
             // Add DbContext

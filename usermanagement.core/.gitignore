@@ -366,7 +366,7 @@ FodyWeavers.xsd
 
 # ------
 .DS_Store
-turbin.sikker.core/drive/
-turbin.sikker.core/turbinapi.tar
-turbin.sikker.core/controller.txt
-turbin.sikker.core/Controllers/TEST.cs
+usermanagement.core/drive/
+usermanagement.core/turbinapi.tar
+usermanagement.core/controller.txt
+usermanagement.core/Controllers/TEST.cs
