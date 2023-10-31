@@ -22,7 +22,7 @@ namespace usermanagement.core.Models
         public string? AzureAdUserId { get; set; }
 
         [Required]
-        [StringLength(150)]
+        [StringLength(50)]
         public string? UserRoleId { get; set; }
 
         [Required]
