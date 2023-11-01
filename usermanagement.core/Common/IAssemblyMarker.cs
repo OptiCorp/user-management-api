@@ -1,4 +1,4 @@
-﻿namespace turbin.sikker.core.Common;
+﻿namespace usermanagement.core.Common;
 
 public interface IAssemblyMarker
 {
