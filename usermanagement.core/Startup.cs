@@ -8,6 +8,8 @@ using Microsoft.Identity.Web;
 using Serilog;
 using usermanagement.core.Services;
 using usermanagement.core.Utilities;
+using usermanagement.core.Common;
+
 
 namespace usermanagement.core
 
@@ -52,10 +54,10 @@ namespace usermanagement.core
             services.AddScoped<IUserUtilities, UserUtilities>();
             services.AddScoped<IUserRoleUtilities, UserRoleUtilities>();
 
-            // services.AddScoped<ValidationHelper>();
+            services.AddScoped<ValidationHelper>();
 
             services.AddControllers();
-            // services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>();
+            services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>();
 
 
             // Add DbContext

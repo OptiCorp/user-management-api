@@ -3,7 +3,7 @@ using usermanagement.core.Models.DTO;
 using usermanagement.core.Common;
 
 
-namespace turbin.sikker.core.Validation.UserValidations
+namespace usermanagement.core.Validation.UserValidations
 {
     public class UserCreateValidator : AbstractValidator<UserCreateDto>
     {
