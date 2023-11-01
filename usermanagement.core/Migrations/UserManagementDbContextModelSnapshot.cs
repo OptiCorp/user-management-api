@@ -70,7 +70,7 @@ namespace usermanagementapi.Migrations
 
                     b.HasIndex("UserRoleId");
 
-                    b.ToTable("User");
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("usermanagement.core.Models.UserRole", b =>
@@ -87,7 +87,7 @@ namespace usermanagementapi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRole", (string)null);
                 });
 
             modelBuilder.Entity("usermanagement.core.Models.User", b =>
