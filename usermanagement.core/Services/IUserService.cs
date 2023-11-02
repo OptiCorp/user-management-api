@@ -15,5 +15,9 @@ namespace usermanagement.core.Services
         Task DeleteUserAsync(string id);
         Task HardDeleteUserAsync(string id);
         Task<string> GetInspectorRoleIdAsync();
+        Task UserCreated(User user);
+        Task UserUpdated(User user);
+        Task UserSoftDeleted(User user);
+        Task UserHardDeleted(User user);
     }
 }
