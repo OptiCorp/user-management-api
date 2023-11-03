@@ -3,6 +3,8 @@ using usermanagement.core.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using usermanagement.core.Utilities;
 using usermanagement.core;
+using Azure.Messaging.ServiceBus;
+using System.Text.Json;
 
 namespace usermanagement.core.Services
 {
@@ -139,6 +141,74 @@ namespace usermanagement.core.Services
                 _context.User.Remove(user);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task UserCreated(string id)
+        {
+            var connectionString = Environment.GetEnvironmentVariable("serviceBusConnectionString");
+            var sbClient = new ServiceBusClient(connectionString);
+
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
+
+            UserBusCreateDto userCreatedBusDto = new UserBusCreateDto
+            {
+                Id = user.Id,
+                AzureAdUserId = user.AzureAdUserId,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                UserRole = user.UserRole.Id,
+                CreatedDate = user.CreatedDate,
+                Status = user.Status.ToString()
+            };
+
+            var sender = sbClient.CreateSender("user-created");
+            var body = JsonSerializer.Serialize(userCreatedBusDto);
+            var sbMessage = new ServiceBusMessage(body);
+            await sender.SendMessageAsync(sbMessage);
+        }
+
+        public async Task UserUpdated(string id)
+        {
+            var connectionString = Environment.GetEnvironmentVariable("serviceBusConnectionString");
+            var sbClient = new ServiceBusClient(connectionString);
+
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
+
+            UserBusUpdateDto userUpdatedBusDto = new UserBusUpdateDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Username = user.Username,
+                Email = user.Email,
+                UserRole = user.UserRole.Id,
+                Status = user.Status.ToString(),
+                UpdatedDate = user.UpdatedDate
+            };
+
+            var sender = sbClient.CreateSender("user-updated");
+            var body = JsonSerializer.Serialize(userUpdatedBusDto);
+            var sbMessage = new ServiceBusMessage(body);
+            await sender.SendMessageAsync(sbMessage);
+        }
+
+        public async Task UserDeleted(string id, DeleteMode mode)
+        {
+            var connectionString = Environment.GetEnvironmentVariable("serviceBusConnectionString");
+            var sbClient = new ServiceBusClient(connectionString);
+
+            UserBusDeleteDto userSoftDeleteBusDto = new UserBusDeleteDto
+            {
+                Id = id,
+                DeleteMode = mode.ToString()
+            };
+
+            var sender = sbClient.CreateSender("user-deleted");
+            var body = JsonSerializer.Serialize(userSoftDeleteBusDto);
+            var sbMessage = new ServiceBusMessage(body);
+            await sender.SendMessageAsync(sbMessage);
         }
     }
 }
