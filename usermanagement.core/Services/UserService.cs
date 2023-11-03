@@ -159,7 +159,8 @@ namespace usermanagement.core.Services
                 LastName = user.LastName,
                 Email = user.Email,
                 UserRole = user.UserRole.Id,
-                CreatedDate = user.CreatedDate
+                CreatedDate = user.CreatedDate,
+                Status = user.Status.ToString()
             };
 
             var sender = sbClient.CreateSender("user-created");
@@ -182,7 +183,7 @@ namespace usermanagement.core.Services
                 LastName = user.LastName,
                 Username = user.Username,
                 Email = user.Email,
-                UserRole = user.UserRole.Name,
+                UserRole = user.UserRole.Id,
                 Status = user.Status.ToString(),
                 UpdatedDate = user.UpdatedDate
             };
@@ -198,11 +199,9 @@ namespace usermanagement.core.Services
             var connectionString = Environment.GetEnvironmentVariable("serviceBusConnectionString");
             var sbClient = new ServiceBusClient(connectionString);
 
-            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
-
             UserBusDeleteDto userSoftDeleteBusDto = new UserBusDeleteDto
             {
-                Id = user.Id,
+                Id = id,
                 DeleteMode = mode.ToString()
             };
 
