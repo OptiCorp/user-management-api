@@ -1,8 +1,17 @@
-﻿using usermanagement.core.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using usermanagement.core.Models;
 using usermanagement.core.Models.DTO;
 
 namespace usermanagement.core.Services
 {
+    public enum DeleteMode
+    {
+        [Display(Name = "Soft")]
+        Soft,
+        [Display(Name = "Hard")]
+        Hard
+    }
+
     public interface IUserService
     {
         Task<IEnumerable<UserDto>> GetAllUsersAsync();
@@ -17,7 +26,6 @@ namespace usermanagement.core.Services
         Task<string> GetInspectorRoleIdAsync();
         Task UserCreated(User user);
         Task UserUpdated(User user);
-        Task UserSoftDeleted(User user);
-        Task UserHardDeleted(User user);
+        Task UserDeleted(User user, DeleteMode mode);
     }
 }

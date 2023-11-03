@@ -133,7 +133,7 @@ namespace usermanagement.core.Services
             {
                 user.Status = UserStatus.Deleted;
                 await _context.SaveChangesAsync();
-                await UserSoftDeleted(user);
+                await UserDeleted(user, DeleteMode.Soft);
             }
         }
         public async Task HardDeleteUserAsync(string id)
@@ -143,16 +143,16 @@ namespace usermanagement.core.Services
             {
                 _context.User.Remove(user);
                 await _context.SaveChangesAsync();
-                await UserHardDeleted(user);
+                await UserDeleted(user, DeleteMode.Hard);
             }
         }
 
         public async Task UserCreated(User user)
         {
-            var connectionString = "Endpoint=sb://servicebus-turbinsikker-prod.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=jsxc2wM5vV4rhtevLn921gUZCcs7eLEsg+ASbHwJEng=";
+            var connectionString = Environment.GetEnvironmentVariable("serviceBusConnectionString");
             var sbClient = new ServiceBusClient(connectionString);
 
-            UserBusDto userCreatedBusDto = new UserBusDto
+            UserBusCreateDto userCreatedBusDto = new UserBusCreateDto
             {
                 Id = user.Id,
                 AzureAdUserId = user.AzureAdUserId,
@@ -172,10 +172,10 @@ namespace usermanagement.core.Services
 
         public async Task UserUpdated(User user)
         {
-            var connectionString = "Endpoint=sb://servicebus-turbinsikker-prod.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=jsxc2wM5vV4rhtevLn921gUZCcs7eLEsg+ASbHwJEng=";
+            var connectionString = Environment.GetEnvironmentVariable("serviceBusConnectionString");
             var sbClient = new ServiceBusClient(connectionString);
 
-            UserBusDto userUpdatedBusDto = new UserBusDto
+            UserBusUpdateDto userUpdatedBusDto = new UserBusUpdateDto
             {
                 Id = user.Id,
                 FirstName = user.FirstName,
@@ -193,34 +193,19 @@ namespace usermanagement.core.Services
             await sender.SendMessageAsync(sbMessage);
         }
 
-        public async Task UserSoftDeleted(User user)
+        public async Task UserDeleted(User user, DeleteMode mode)
         {
-            var connectionString = "Endpoint=sb://servicebus-turbinsikker-prod.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=jsxc2wM5vV4rhtevLn921gUZCcs7eLEsg+ASbHwJEng=";
+            var connectionString = Environment.GetEnvironmentVariable("serviceBusConnectionString");
             var sbClient = new ServiceBusClient(connectionString);
 
-            UserBusDto userSoftDeleteBusDto = new UserBusDto
+            UserBusDeleteDto userSoftDeleteBusDto = new UserBusDeleteDto
             {
                 Id = user.Id,
+                DeleteMode = mode.ToString()
             };
 
-            var sender = sbClient.CreateSender("user-soft-deleted");
+            var sender = sbClient.CreateSender("user-deleted");
             var body = JsonSerializer.Serialize(userSoftDeleteBusDto);
-            var sbMessage = new ServiceBusMessage(body);
-            await sender.SendMessageAsync(sbMessage);
-        }
-
-        public async Task UserHardDeleted(User user)
-        {
-            var connectionString = "Endpoint=sb://servicebus-turbinsikker-prod.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=jsxc2wM5vV4rhtevLn921gUZCcs7eLEsg+ASbHwJEng=";
-            var sbClient = new ServiceBusClient(connectionString);
-
-            UserBusDto userHardDeleteBusDto = new UserBusDto
-            {
-                Id = user.Id,
-            };
-
-            var sender = sbClient.CreateSender("user-hard-deleted");
-            var body = JsonSerializer.Serialize(userHardDeleteBusDto);
             var sbMessage = new ServiceBusMessage(body);
             await sender.SendMessageAsync(sbMessage);
         }

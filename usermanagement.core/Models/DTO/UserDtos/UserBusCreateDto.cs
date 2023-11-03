@@ -3,18 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace usermanagement.core.Models
 {
-    public enum UserAction
-    {
-        [Display(Name = "Created")]
-        Created,
-        [Display(Name = "Updated")]
-        Updated,
-        [Display(Name = "SoftDeleted")]
-        SoftDeleted,
-        [Display(Name = "HardDeleted")]
-        HardDeleted,
-    }
-    public class UserBusDto
+    public class UserBusCreateDto
     {
         public string? Id { get; set; }
 
@@ -33,8 +22,10 @@ namespace usermanagement.core.Models
 
         public string? Status { get; set; }
 
+        [Required]
         public DateTime? CreatedDate { get; set; }
 
         public DateTime? UpdatedDate { get; set; }
+
     }
 }
