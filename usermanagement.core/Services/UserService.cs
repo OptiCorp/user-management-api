@@ -84,7 +84,6 @@ namespace usermanagement.core.Services
             };
             _context.User.Add(user);
             await _context.SaveChangesAsync();
-            await UserCreated(user);
 
             return user.Id;
         }
@@ -123,7 +122,6 @@ namespace usermanagement.core.Services
                 }
                 user.UpdatedDate = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
                 await _context.SaveChangesAsync();
-                await UserUpdated(user);
             }
         }
         public async Task DeleteUserAsync(string id)
@@ -133,7 +131,6 @@ namespace usermanagement.core.Services
             {
                 user.Status = UserStatus.Deleted;
                 await _context.SaveChangesAsync();
-                await UserDeleted(user, DeleteMode.Soft);
             }
         }
         public async Task HardDeleteUserAsync(string id)
@@ -143,14 +140,15 @@ namespace usermanagement.core.Services
             {
                 _context.User.Remove(user);
                 await _context.SaveChangesAsync();
-                await UserDeleted(user, DeleteMode.Hard);
             }
         }
 
-        public async Task UserCreated(User user)
+        public async Task UserCreated(string id)
         {
             var connectionString = Environment.GetEnvironmentVariable("serviceBusConnectionString");
             var sbClient = new ServiceBusClient(connectionString);
+
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
 
             UserBusCreateDto userCreatedBusDto = new UserBusCreateDto
             {
@@ -170,10 +168,12 @@ namespace usermanagement.core.Services
             await sender.SendMessageAsync(sbMessage);
         }
 
-        public async Task UserUpdated(User user)
+        public async Task UserUpdated(string id)
         {
             var connectionString = Environment.GetEnvironmentVariable("serviceBusConnectionString");
             var sbClient = new ServiceBusClient(connectionString);
+
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
 
             UserBusUpdateDto userUpdatedBusDto = new UserBusUpdateDto
             {
@@ -193,10 +193,12 @@ namespace usermanagement.core.Services
             await sender.SendMessageAsync(sbMessage);
         }
 
-        public async Task UserDeleted(User user, DeleteMode mode)
+        public async Task UserDeleted(string id, DeleteMode mode)
         {
             var connectionString = Environment.GetEnvironmentVariable("serviceBusConnectionString");
             var sbClient = new ServiceBusClient(connectionString);
+
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
 
             UserBusDeleteDto userSoftDeleteBusDto = new UserBusDeleteDto
             {

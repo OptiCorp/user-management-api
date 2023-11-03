@@ -146,6 +146,8 @@ namespace usermanagement.core.Controllers
 
             var newUserId = await _userService.CreateUserAsync(user);
             var newUser = await _userService.GetUserByUsernameAsync(user.Username);
+
+            await _userService.UserCreated(newUserId);
             return CreatedAtAction(nameof(GetUserByIdAsync), new { id = newUserId }, newUser);
         }
 
@@ -187,6 +189,8 @@ namespace usermanagement.core.Controllers
 
             await _userService.UpdateUserAsync(updatedUser);
 
+            await _userService.UserUpdated(updatedUser.Id);
+
             return Ok("User updated");
         }
 
@@ -207,6 +211,7 @@ namespace usermanagement.core.Controllers
             }
 
             await _userService.DeleteUserAsync(id);
+            await _userService.UserDeleted(id, DeleteMode.Soft);
 
             return Ok($"User: '{user.Username}' deleted");
         }
@@ -225,6 +230,7 @@ namespace usermanagement.core.Controllers
             }
 
             await _userService.HardDeleteUserAsync(id);
+            await _userService.UserDeleted(id, DeleteMode.Hard);
 
             return Ok($"User: '{user.Username}' deleted");
         }
