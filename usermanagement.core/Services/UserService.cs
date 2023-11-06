@@ -158,7 +158,7 @@ namespace usermanagement.core.Services
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
-                UserRole = user.UserRole.Id,
+                UserRole = user.UserRole.Name,
                 CreatedDate = user.CreatedDate,
                 Status = user.Status.ToString()
             };
@@ -183,7 +183,7 @@ namespace usermanagement.core.Services
                 LastName = user.LastName,
                 Username = user.Username,
                 Email = user.Email,
-                UserRole = user.UserRole.Id,
+                UserRole = user.UserRole.Name,
                 Status = user.Status.ToString(),
                 UpdatedDate = user.UpdatedDate
             };
