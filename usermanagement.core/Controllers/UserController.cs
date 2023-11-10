@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using usermanagement.core.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Azure.Identity;
+using Microsoft.Graph;
 
 namespace usermanagement.core.Controllers
 {
@@ -108,7 +110,14 @@ namespace usermanagement.core.Controllers
             {
                 user.UserRoleId = inspectorRoleId;
             }
-
+            var graphClient = new GraphServiceClient(new DefaultAzureCredential());
+            var body = new Microsoft.Graph.Models.Invitation
+            {
+                InvitedUserEmailAddress = user.Email,
+                InviteRedirectUrl = "https://um-app-prod.azurewebsites.net/",
+                SendInvitationMessage = true
+            };
+            var response = await graphClient.Invitations.PostAsync(body);
 
             if (!string.IsNullOrEmpty(user.UserRoleId))
             {
