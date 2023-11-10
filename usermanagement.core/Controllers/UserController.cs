@@ -111,7 +111,7 @@ namespace usermanagement.core.Controllers
                 user.UserRoleId = inspectorRoleId;
             }
             try {
-                string[] scopes = { "User.ReadWrite.All"};
+                string[] scopes = new []{ "https://graph.microsoft.com/.default" };
                 var graphClient = new GraphServiceClient(new DefaultAzureCredential(
                     new DefaultAzureCredentialOptions {ManagedIdentityClientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID")}
                 ), scopes);
