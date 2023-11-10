@@ -111,10 +111,10 @@ namespace usermanagement.core.Controllers
                 user.UserRoleId = inspectorRoleId;
             }
             try {
-                string[] scopes = new []{ "User.ReadWrite.All"};
-                var graphClient = new GraphServiceClient(new DefaultAzureCredential(
-                    new DefaultAzureCredentialOptions {ManagedIdentityClientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID")}
-                ), scopes, "https://graph.microsoft.com/v1.0");
+                string[] scopes = new[] { "https://graph.microsoft.com/.default" };
+                var graphClient = new GraphServiceClient(new ChainedTokenCredential(
+                                    new ManagedIdentityCredential(),
+                                    new EnvironmentCredential()),scopes);
                 var body = new Microsoft.Graph.Models.Invitation
                 {
                     InvitedUserEmailAddress = user.Email,
