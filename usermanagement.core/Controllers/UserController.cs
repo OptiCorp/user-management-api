@@ -111,8 +111,8 @@ namespace usermanagement.core.Controllers
                 user.UserRoleId = inspectorRoleId;
             }
             try {
-
-                var graphClient = new GraphServiceClient(new DefaultAzureCredential());
+                string[] scopes = {"User.Read", "User.ReadWrite.All"};
+                var graphClient = new GraphServiceClient(new DefaultAzureCredential(), scopes);
                 var body = new Microsoft.Graph.Models.Invitation
                 {
                     InvitedUserEmailAddress = user.Email,
