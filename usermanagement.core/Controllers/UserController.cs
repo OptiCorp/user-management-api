@@ -112,7 +112,9 @@ namespace usermanagement.core.Controllers
             }
             try {
                 string[] scopes = { "User.ReadWrite.All"};
-                var graphClient = new GraphServiceClient(new DefaultAzureCredential(), scopes);
+                var graphClient = new GraphServiceClient(new DefaultAzureCredential(
+                    new DefaultAzureCredentialOptions {ManagedIdentityClientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID")}
+                ), scopes);
                 var body = new Microsoft.Graph.Models.Invitation
                 {
                     InvitedUserEmailAddress = user.Email,
