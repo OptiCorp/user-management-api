@@ -113,7 +113,7 @@ namespace usermanagement.core.Controllers
             try {
                 string[] scopes = new[] { "https://graph.microsoft.com/.default" };
                 var graphClient = new GraphServiceClient(new ChainedTokenCredential(
-                                    new ManagedIdentityCredential(),
+                                    new ManagedIdentityCredential(Environment.GetEnvironmentVariable("AZURE_CLIENT_ID")),
                                     new EnvironmentCredential()),scopes);
                 var body = new Microsoft.Graph.Models.Invitation
                 {
