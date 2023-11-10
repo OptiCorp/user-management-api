@@ -110,14 +110,22 @@ namespace usermanagement.core.Controllers
             {
                 user.UserRoleId = inspectorRoleId;
             }
-            var graphClient = new GraphServiceClient(new DefaultAzureCredential());
-            var body = new Microsoft.Graph.Models.Invitation
+            try {
+
+                var graphClient = new GraphServiceClient(new DefaultAzureCredential());
+                var body = new Microsoft.Graph.Models.Invitation
+                {
+                    InvitedUserEmailAddress = user.Email,
+                    InviteRedirectUrl = "https://um-app-prod.azurewebsites.net/",
+                    SendInvitationMessage = true
+                };
+                var response = await graphClient.Invitations.PostAsync(body);
+            } catch (Exception ex) 
             {
-                InvitedUserEmailAddress = user.Email,
-                InviteRedirectUrl = "https://um-app-prod.azurewebsites.net/",
-                SendInvitationMessage = true
-            };
-            var response = await graphClient.Invitations.PostAsync(body);
+                Console.WriteLine(ex);
+                throw;
+            }
+
 
             if (!string.IsNullOrEmpty(user.UserRoleId))
             {
