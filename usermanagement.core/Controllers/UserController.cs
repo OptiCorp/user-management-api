@@ -111,7 +111,7 @@ namespace usermanagement.core.Controllers
                 user.UserRoleId = inspectorRoleId;
             }
             try {
-                string[] scopes = {"User.Read", "User.ReadWrite.All"};
+                string[] scopes = { "User.ReadWrite.All"};
                 var graphClient = new GraphServiceClient(new DefaultAzureCredential(), scopes);
                 var body = new Microsoft.Graph.Models.Invitation
                 {
