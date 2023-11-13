@@ -179,6 +179,7 @@ namespace usermanagement.core.Services
             UserBusUpdateDto userUpdatedBusDto = new UserBusUpdateDto
             {
                 Id = user.Id,
+                AzureAdUserId = user.AzureAdUserId,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Username = user.Username,
