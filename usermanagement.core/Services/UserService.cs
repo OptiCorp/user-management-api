@@ -5,6 +5,8 @@ using usermanagement.core.Utilities;
 using usermanagement.core;
 using Azure.Messaging.ServiceBus;
 using System.Text.Json;
+using Microsoft.Graph;
+using Azure.Identity;
 
 namespace usermanagement.core.Services
 {
@@ -69,11 +71,11 @@ namespace usermanagement.core.Services
             return _userUtilities.UserToDto(user);
         }
 
-        public async Task<string> CreateUserAsync(UserCreateDto userDto)
+        public async Task<string> CreateUserAsync(UserCreateDto userDto, string id)
         {
             var user = new User
             {
-                AzureAdUserId = userDto.AzureAdUserId,
+                AzureAdUserId = id,
                 Username = userDto.Username,
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
@@ -209,6 +211,48 @@ namespace usermanagement.core.Services
             var body = JsonSerializer.Serialize(userSoftDeleteBusDto);
             var sbMessage = new ServiceBusMessage(body);
             await sender.SendMessageAsync(sbMessage);
+        }
+
+        public async Task<Microsoft.Graph.Models.Invitation?> CreateAzureUser(string email) 
+        {
+            string[] scopes = new[] { "https://graph.microsoft.com/.default" };
+            var graphClient = new GraphServiceClient(new ChainedTokenCredential(
+                                        new ManagedIdentityCredential(Environment.GetEnvironmentVariable("AZURE_CLIENT_ID")),
+                                        new EnvironmentCredential()),scopes);
+            
+            var body = new Microsoft.Graph.Models.Invitation
+            {
+                InvitedUserEmailAddress = email,
+                InviteRedirectUrl = "https://um-app-prod.azurewebsites.net/",
+            };
+            var response = await graphClient.Invitations.PostAsync(body);
+
+            return response;
+        }
+
+        public async Task SoftDeleteAzureUser(string id) 
+        {
+            try 
+            {
+                string[] scopes = new[] { "https://graph.microsoft.com/.default" };
+                var graphClient = new GraphServiceClient(new ChainedTokenCredential(
+                                        new ManagedIdentityCredential(Environment.GetEnvironmentVariable("AZURE_CLIENT_ID")),
+                                        new EnvironmentCredential()),scopes);
+                    
+                var requestBody = new Microsoft.Graph.Models.User
+                {
+                    AccountEnabled = false
+                };
+                    
+                var result = await graphClient.Users[id].PatchAsync(requestBody);
+            }
+
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex);
+            }
+                
+                
         }
     }
 }

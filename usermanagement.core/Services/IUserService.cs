@@ -20,12 +20,14 @@ namespace usermanagement.core.Services
         Task<User> GetUserByAzureAdUserIdAsync(string azureAdUserId);
         Task<UserDto> GetUserByIdAsync(string id);
         Task UpdateUserAsync(UserUpdateDto user);
-        Task<string> CreateUserAsync(UserCreateDto user);
+        Task<string> CreateUserAsync(UserCreateDto user, string id);
         Task DeleteUserAsync(string id);
         Task HardDeleteUserAsync(string id);
         Task<string> GetInspectorRoleIdAsync();
         Task UserCreated(string id);
         Task UserUpdated(string id);
         Task UserDeleted(string id, DeleteMode mode);
+        Task<Microsoft.Graph.Models.Invitation?> CreateAzureUser(string email);
+        Task SoftDeleteAzureUser(string id); 
     }
 }
