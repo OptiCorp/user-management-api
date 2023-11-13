@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using usermanagement.core.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
-using Azure.Identity;
-using Microsoft.Graph;
+
+
 
 namespace usermanagement.core.Controllers
 {
@@ -110,23 +110,7 @@ namespace usermanagement.core.Controllers
             {
                 user.UserRoleId = inspectorRoleId;
             }
-            try {
-                string[] scopes = new[] { "https://graph.microsoft.com/.default" };
-                var graphClient = new GraphServiceClient(new ChainedTokenCredential(
-                                    new ManagedIdentityCredential(Environment.GetEnvironmentVariable("AZURE_CLIENT_ID")),
-                                    new EnvironmentCredential()),scopes);
-                var body = new Microsoft.Graph.Models.Invitation
-                {
-                    InvitedUserEmailAddress = user.Email,
-                    InviteRedirectUrl = "https://um-app-prod.azurewebsites.net/",
-                };
-                var response = await graphClient.Invitations.PostAsync(body);
-            } catch (Exception ex) 
-            {
-                Console.WriteLine(ex);
-                throw;
-            }
-
+            
 
             if (!string.IsNullOrEmpty(user.UserRoleId))
             {
@@ -160,9 +144,9 @@ namespace usermanagement.core.Controllers
             {
                 return Conflict("Invalid email");
             }
+            var invitationResponse = await _userService.CreateAzureUser(user.Email);
 
-
-            var newUserId = await _userService.CreateUserAsync(user);
+            var newUserId = await _userService.CreateUserAsync(user, invitationResponse.InvitedUser.Id);
             var newUser = await _userService.GetUserByUsernameAsync(user.Username);
 
             await _userService.UserCreated(newUserId);
@@ -178,7 +162,7 @@ namespace usermanagement.core.Controllers
         {
             var users = await _userService.GetAllUsersAsync();
             users = users.Where(u => u.Id != updatedUser.Id);
-
+            // TODO: Update AccountEnabled on UpdateUser
             ValidationResult validationResult = validator.Validate(updatedUser);
 
             if (!validationResult.IsValid)
@@ -230,7 +214,9 @@ namespace usermanagement.core.Controllers
 
             await _userService.DeleteUserAsync(id);
             await _userService.UserDeleted(id, DeleteMode.Soft);
-
+            
+            await _userService.SoftDeleteAzureUser(user.AzureAdUserId);
+            
             return Ok($"User: '{user.Username}' deleted");
         }
 
