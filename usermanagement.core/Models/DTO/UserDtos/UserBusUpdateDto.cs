@@ -6,6 +6,8 @@ namespace usermanagement.core.Models
     {
         public string? Id { get; set; }
 
+        public string? AzureAdUserId { get; set; }
+
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }
