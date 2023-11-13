@@ -129,9 +129,10 @@ namespace usermanagement.core.Tests.Services
                 Email = "some email",
                 Username = "Username 10",
             };
+            var azureUserId = "1234-3214-1321-4123-1s3f3ea3ax2a";
 
             //Act
-            var newUserId = await userService.CreateUserAsync(newUser);
+            var newUserId = await userService.CreateUserAsync(newUser, azureUserId);
             var users = await userService.GetAllUsersAdminAsync();
 
             //Assert
