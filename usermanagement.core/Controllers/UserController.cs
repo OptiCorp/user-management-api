@@ -160,6 +160,12 @@ namespace usermanagement.core.Controllers
         [SwaggerResponse(404, "User not found")]
         public async Task<IActionResult> UpdateUserAsync(UserUpdateDto updatedUser, [FromServices] IValidator<UserUpdateDto> validator)
         {
+            var user = await _userService.GetUserByIdAsync(updatedUser.Id);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
             var users = await _userService.GetAllUsersAsync();
             users = users.Where(u => u.Id != updatedUser.Id);
             
@@ -193,14 +199,14 @@ namespace usermanagement.core.Controllers
 
             await _userService.UserUpdated(updatedUser.Id);
 
-            if (updatedUser.Status == "Disabled")
+            if (Enum.Parse<UserStatus>(updatedUser.Status) == UserStatus.Disabled)
             {
-                await _userService.DisableAzureUser(updatedUser.AzureAdUserId);
+                await _userService.DisableAzureUser(user.AzureAdUserId);
             }
 
-            if (updatedUser.Status == "Active")
+            if (Enum.Parse<UserStatus>(updatedUser.Status) == UserStatus.Active)
             {
-                await _userService.EnableAzureUser(updatedUser.AzureAdUserId);
+                await _userService.EnableAzureUser(user.AzureAdUserId);
             }
 
             return Ok("User updated");
