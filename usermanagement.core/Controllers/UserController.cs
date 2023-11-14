@@ -193,7 +193,15 @@ namespace usermanagement.core.Controllers
 
             await _userService.UserUpdated(updatedUser.Id);
 
-            await _userService.UpdateAzureUser(updatedUser.AzureAdUserId, updatedUser.Status);
+            if (Enum.Parse<UserStatus>(updatedUser.Status) == UserStatus.Disabled)
+            {
+                await _userService.DisableAzureUser(updatedUser.AzureAdUserId);
+            }
+
+            if (Enum.Parse<UserStatus>(updatedUser.Status) == UserStatus.Active)
+            {
+                await _userService.EnableAzureUser(updatedUser.AzureAdUserId);
+            }
 
             return Ok("User updated");
         }
@@ -217,7 +225,7 @@ namespace usermanagement.core.Controllers
             await _userService.DeleteUserAsync(id);
             await _userService.UserDeleted(id, DeleteMode.Soft);
             
-            await _userService.SoftDeleteAzureUser(user.AzureAdUserId);
+            await _userService.DisableAzureUser(user.AzureAdUserId);
             
             return Ok($"User: '{user.Username}' deleted");
         }
