@@ -193,12 +193,12 @@ namespace usermanagement.core.Controllers
 
             await _userService.UserUpdated(updatedUser.Id);
 
-            if (Enum.Parse<UserStatus>(updatedUser.Status) == UserStatus.Disabled)
+            if (updatedUser.Status == "Disabled")
             {
                 await _userService.DisableAzureUser(updatedUser.AzureAdUserId);
             }
 
-            if (Enum.Parse<UserStatus>(updatedUser.Status) == UserStatus.Active)
+            if (updatedUser.Status == "Active")
             {
                 await _userService.EnableAzureUser(updatedUser.AzureAdUserId);
             }
