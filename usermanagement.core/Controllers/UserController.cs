@@ -162,7 +162,7 @@ namespace usermanagement.core.Controllers
         {
             var users = await _userService.GetAllUsersAsync();
             users = users.Where(u => u.Id != updatedUser.Id);
-            // TODO: Update AccountEnabled on UpdateUser
+            
             ValidationResult validationResult = validator.Validate(updatedUser);
 
             if (!validationResult.IsValid)
@@ -192,6 +192,8 @@ namespace usermanagement.core.Controllers
             await _userService.UpdateUserAsync(updatedUser);
 
             await _userService.UserUpdated(updatedUser.Id);
+
+            await _userService.UpdateAzureUser(updatedUser.AzureAdUserId, updatedUser.Status);
 
             return Ok("User updated");
         }

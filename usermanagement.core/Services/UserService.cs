@@ -104,6 +104,8 @@ namespace usermanagement.core.Services
                     user.Email = updatedUserDto.Email;
                 if (updatedUserDto.UserRoleId != null)
                     user.UserRoleId = updatedUserDto.UserRoleId;
+                if (updatedUserDto.AzureAdUserId != null)
+                    user.AzureAdUserId = updatedUserDto.AzureAdUserId;
                 if (updatedUserDto.Status != null)
                 {
                     string status = updatedUserDto.Status.ToLower();
@@ -251,9 +253,30 @@ namespace usermanagement.core.Services
             catch (Exception ex) 
             {
                 Console.WriteLine(ex);
+            }   
+        }
+
+        public async Task UpdateAzureUser(string id, string status) 
+        {
+            try 
+            {
+                string[] scopes = new[] { "https://graph.microsoft.com/.default" };
+                var graphClient = new GraphServiceClient(new ChainedTokenCredential(
+                                        new ManagedIdentityCredential(Environment.GetEnvironmentVariable("AZURE_CLIENT_ID")),
+                                        new EnvironmentCredential()),scopes);
+                    
+                var requestBody = new Microsoft.Graph.Models.User
+                {
+                    AccountEnabled = status != "Deleted"
+                };
+                    
+                var result = await graphClient.Users[id].PatchAsync(requestBody);
             }
-                
-                
+
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }
