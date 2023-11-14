@@ -227,6 +227,7 @@ namespace usermanagement.core.Services
             {
                 InvitedUserEmailAddress = email,
                 InviteRedirectUrl = "https://um-app-prod.azurewebsites.net/",
+                SendInvitationMessage = true
             };
             var response = await graphClient.Invitations.PostAsync(body);
 
