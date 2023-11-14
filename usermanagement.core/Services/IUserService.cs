@@ -28,7 +28,7 @@ namespace usermanagement.core.Services
         Task UserUpdated(string id);
         Task UserDeleted(string id, DeleteMode mode);
         Task<Microsoft.Graph.Models.Invitation?> CreateAzureUser(string email);
-        Task SoftDeleteAzureUser(string id);
-        Task UpdateAzureUser(string id, string status); 
+        Task DisableAzureUser(string azureId);
+        Task EnableAzureUser(string azureId); 
     }
 }

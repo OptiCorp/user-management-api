@@ -233,7 +233,7 @@ namespace usermanagement.core.Services
             return response;
         }
 
-        public async Task SoftDeleteAzureUser(string id) 
+        public async Task DisableAzureUser(string azureId) 
         {
             try 
             {
@@ -247,7 +247,7 @@ namespace usermanagement.core.Services
                     AccountEnabled = false
                 };
                     
-                var result = await graphClient.Users[id].PatchAsync(requestBody);
+                var result = await graphClient.Users[azureId].PatchAsync(requestBody);
             }
 
             catch (Exception ex) 
@@ -256,7 +256,7 @@ namespace usermanagement.core.Services
             }   
         }
 
-        public async Task UpdateAzureUser(string id, string status) 
+        public async Task EnableAzureUser(string azureId) 
         {
             try 
             {
@@ -267,10 +267,10 @@ namespace usermanagement.core.Services
                     
                 var requestBody = new Microsoft.Graph.Models.User
                 {
-                    AccountEnabled = status != "Deleted"
+                    AccountEnabled = true
                 };
                     
-                var result = await graphClient.Users[id].PatchAsync(requestBody);
+                var result = await graphClient.Users[azureId].PatchAsync(requestBody);
             }
 
             catch (Exception ex) 
