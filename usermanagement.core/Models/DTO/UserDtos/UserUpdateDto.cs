@@ -24,5 +24,7 @@ namespace usermanagement.core.Models.DTO
         public string? UserRoleId { get; set; }
 
         public string? Status { get; set; }
+
+        public string? AzureAdUserId { get; set; }
     }
 }
